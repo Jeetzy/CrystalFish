@@ -1401,7 +1401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39d37280c505f24ba5cb2aac4ac83ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuManager
-  playSceneName: Scrapyard
+  playSceneName: IntroScene
 --- !u!4 &710425885
 Transform:
   m_ObjectHideFlags: 0
