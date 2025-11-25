@@ -8,44 +8,38 @@ public class LadderCutscene : MonoBehaviour
     public Transform ladder;
 
     [Header("Positions")]
-    public Vector3 startPos = new Vector3(645.3f, 34.04f, 363.38f);
-    public Vector3 endPos = new Vector3(645.4f, 26.02f, 358.67f);
+    public Vector3 startPos;
+    public Vector3 endPos;
 
     [Header("Rotations")]
-    public Vector3 startRot = new Vector3(-90f, 0f, 0f);
-    public Vector3 endRot = new Vector3(0.055f, 0f, 0f);
+    public Vector3 startRot;
+    public Vector3 endRot;
 
     [Header("Timing")]
     public float delayBeforeFall = 3f;
     public float fallDuration = 2f;
 
     [Header("Fade UI")]
-    public CanvasGroup fadeUI; // Black screen
+    public CanvasGroup fadeUI;
     public float fadeDuration = 1.5f;
 
     [Header("Next Scene")]
     public string nextScene = "MainMenu";
 
-    private bool hasPlayed = false;
+    private bool isPlaying = false;
 
-    void Start()
+    public void Play()
     {
-        if (PlayerPrefs.GetString("MinigameDone", "no") == "yes")
+        if (!isPlaying)
         {
             StartCoroutine(PlayCutscene());
         }
     }
 
-    public static void MarkReturn()
-{
-    PlayerPrefs.SetString("ReturnScenePlayed", "yes");
-    PlayerPrefs.SetString("MinigameDone", "yes"); 
-    PlayerPrefs.Save();
-}
-
-
     IEnumerator PlayCutscene()
     {
+        isPlaying = true;
+
         ladder.position = startPos;
         ladder.rotation = Quaternion.Euler(startRot);
 
@@ -63,12 +57,12 @@ public class LadderCutscene : MonoBehaviour
             yield return null;
         }
 
-        // Fade to black
-        float fade = 0f;
-        while (fade < fadeDuration)
+        // Fade out
+        float f = 0;
+        while (f < fadeDuration)
         {
-            fade += Time.deltaTime;
-            fadeUI.alpha = fade / fadeDuration;
+            f += Time.deltaTime;
+            fadeUI.alpha = f / fadeDuration;
             yield return null;
         }
 

@@ -65,8 +65,9 @@ public class Wire : MonoBehaviour
             // If all wires done, load next scene
             if (completedWires >= totalWires && nextSceneName != "")
             {
-                LadderCutscene.MarkReturn();
-                
+                SceneSpawnManager.instance.MarkCompleted("WireTask");
+
+
                 SceneManager.LoadScene(nextSceneName);
             }
         }

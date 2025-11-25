@@ -10,60 +10,51 @@ public class MiniggameInteract : MonoBehaviour
     public float interactRange = 1.5f;
 
     [Header("UI")]
-    public CanvasGroup interactUI; // “Press E to Interact”
+    public CanvasGroup interactUI;
 
     [Header("Scene Setup")]
-    public string wireTaskScene = "WireTask1";  
-    public Vector3 respawnLocationAfterReturn = new Vector3(640.3f, 25f, 366f);
+    public string wireTaskScene = "WireTask1";
+    public Vector3 returnPlayerPosition = new Vector3(640.3f, 25f, 366f);
 
     private bool triggered = false;
-    private bool minigameDisabled = false;
 
     void Start()
     {
-        // NEW — check if minigame was already done
-        if (PlayerPrefs.GetString("MinigameDone", "no") == "yes")
+        interactUI.alpha = 0;
+        
+        // Disable the minigame forever after completion
+        if (SceneSpawnManager.instance.HasCompleted("WireTask"))
         {
-            minigameDisabled = true;
-            interactUI.alpha = 0f;  // hide text forever
+            interactUI.alpha = 0;
+            this.enabled = false;
         }
     }
 
     void Update()
     {
-        if (minigameDisabled || triggered)
-            return;
+        if (triggered) return;
 
         float dist = Vector3.Distance(player.position, transform.position);
 
         // Fade UI based on distance
-        float alpha = Mathf.Clamp01(1 - (dist / activationRange));
-        interactUI.alpha = alpha;
+        interactUI.alpha = Mathf.Clamp01(1 - (dist / activationRange));
 
-        if (dist < interactRange)
+        // Press E to start minigame
+        if (dist < interactRange && Input.GetKeyDown(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                triggered = true;
-                BeginMinigame();
-            }
+            triggered = true;
+            StartMinigame();
         }
     }
 
-    void BeginMinigame()
+    void StartMinigame()
     {
-        // Save that this minigame will be disabled after return
-        PlayerPrefs.SetString("MinigameDone", "yes");
+        // Set spawn after returning from minigame
+        SceneSpawnManager.instance.SetRespawn("Scrapyard", returnPlayerPosition);
 
-        // Save return respawn
-        PlayerPrefs.SetString("ReturnScene", "Scrapyard");
-        PlayerPrefs.SetFloat("RespawnX", respawnLocationAfterReturn.x);
-        PlayerPrefs.SetFloat("RespawnY", respawnLocationAfterReturn.y);
-        PlayerPrefs.SetFloat("RespawnZ", respawnLocationAfterReturn.z);
+        // Mark minigame as completed for future checks
+        SceneSpawnManager.instance.MarkCompleted("WireTask");
 
-        PlayerPrefs.Save();
-
-        // Load wire task scene
         SceneManager.LoadScene(wireTaskScene);
     }
 }
